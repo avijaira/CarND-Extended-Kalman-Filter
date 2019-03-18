@@ -147,7 +147,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   ekf_.Q_(2, 0) = ekf_.Q_(0, 2);
   ekf_.Q_(2, 2) = dt_2 * noise_ax;
   ekf_.Q_(3, 1) = ekf_.Q_(1, 3);
-  ekf_.Q_(3, 3) = dt_2 * noise_ay
+  ekf_.Q_(3, 3) = dt_2 * noise_ay;
 
   // Call the Kalman Filter predict() function
   ekf_.Predict();
