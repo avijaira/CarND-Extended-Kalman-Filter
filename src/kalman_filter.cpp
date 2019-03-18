@@ -58,8 +58,25 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
    */
 
   // Map from cartesian (x vector [px, py, vx, vy]) to polar coordinates
-  VectorXd z_pred = tools.CalculateJacobian(x_);
-  VectorXd y = z - z_pred;
+  // recover cartesian parameters
+  float px = x_(0);
+  float py = x_(1);
+  float vx = x_(2);
+  float vy = x_(3);
+
+  VectorXd h_(3);
+
+  float c1 = px * px + py * py;
+  float c2 = sqrt(c1);
+
+  // Self-Driving Car ND - Sensor Fusion - Extended Kalman Filters reference:
+  // Equation (53)
+  // map to polar coordinates
+  h_(0) = c2;
+  h_(1) = atan2(py, px);
+  h_(2) = (px * vx + py * vy) / c2;
+
+  VectorXd y = z - h_;
 
   // Normalizing Angles: phi in the y vector should be adjusted so that it is between -pi and pi.
   if (y(1) > PI) {
