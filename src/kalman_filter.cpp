@@ -3,6 +3,8 @@
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
+const float PI = 3.14159265358979f;
+
 /*
  * Please note that the Eigen library does not initialize
  * VectorXd or MatrixXd objects with zeros upon creation.
@@ -54,8 +56,18 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
    * TODO: update the state by using Extended Kalman Filter equations
    */
-  VectorXd z_pred = H_ * x_;
+
+  // Map from cartesian (x vector [px, py, vx, vy]) to polar coordinates
+  VectorXd z_pred = tools.CalculateJacobian(x_);
   VectorXd y = z - z_pred;
+
+  // Normalizing Angles: phi in the y vector should be adjusted so that it is between -pi and pi.
+  if (y(1) > PI) {
+    y(1) -= 2 * PI;
+  } else if (y(1) < -PI) {
+    y(1) += 2 * PI;
+  }
+
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
